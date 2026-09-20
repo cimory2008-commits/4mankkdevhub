@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4MankkTool Versi 2 — Premium Roblox Studio Plugin</title>
+<meta name="description" content="4MankkTool Versi 2: Part to Mesh, Image to Texture, dan Part to Union untuk Roblox Studio.">
+<style>
+  :root {
+    --bg: #050505;
+    --panel: #0e0e11;
+    --panel-2: #16161b;
+    --line: rgba(212, 175, 55, .28);
+    --gold-1: #8c6a16;
+    --gold-2: #d4af37;
+    --gold-3: #f7e291;
+    --text: #ece7d8;
+    --dim: #9a9482;
+    --danger: #e35d5d;
+    --ok: #3ddc84;
+    --warn: #f1c40f;
+    --gold-grad: linear-gradient(135deg, #8c6a16 0%, #d4af37 35%, #f7e291 50%, #d4af37 65%, #8c6a16 100%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: radial-gradient(1200px 600px at 50% -10%, #1c1608 0%, var(--bg) 60%) fixed;
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  .wrap { width: min(1100px, 92%); margin: 0 auto; }
+  .gold-text {
+    background: var(--gold-grad); background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 6s linear infinite;
+  }
+  @keyframes shine { to { background-position: 200% center; } }
+
+  /* Header */
+  header { padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .head { display: flex; align-items: center; gap: 14px; }
+  .logo-ring {
+    width: 58px; height: 58px; border-radius: 50%; padding: 2px; background: var(--gold-grad);
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .logo-ring .inner { width: 100%; height: 100%; border-radius: 50%; background: #000; display: grid; place-items: center; overflow: hidden; }
+  /* ===== TEMPAT LOGO: ganti src="logo.png" dengan file/URL logo kamu ===== */
+  #siteLogo { width: 100%; height: 100%; object-fit: cover; }
+  .logo-fallback { font-weight: 800; font-size: 20px; }
+  .brand h1 { font-family: Georgia, "Times New Roman", serif; font-size: 24px; letter-spacing: 1px; }
+  .brand p { color: var(--dim); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 70px 0 40px; }
+  .hero h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(32px, 6vw, 56px); line-height: 1.1; margin-bottom: 14px; }
+  .hero p { color: var(--dim); max-width: 620px; margin: 0 auto 28px; }
+
+  .btn {
+    display: inline-block; border: 0; cursor: pointer; font-weight: 700; letter-spacing: 1px; font-size: 14px;
+    padding: 13px 26px; border-radius: 10px; color: #0a0a0a; background: var(--gold-grad); background-size: 200% auto;
+    transition: transform .15s, box-shadow .2s, background-position .5s; text-decoration: none; position: relative; overflow: hidden;
+  }
+  .btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 26px rgba(212, 175, 55, .35); background-position: 100% center; }
+  .btn:active { transform: scale(.97); }
+  .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn.ghost { background: transparent; color: var(--gold-2); border: 1px solid var(--line); }
+  .btn.ghost:hover { background: rgba(212, 175, 55, .08); box-shadow: none; }
+  .btn.sm { padding: 7px 12px; font-size: 11px; border-radius: 8px; }
+  .btn.danger { background: transparent; color: var(--danger); border: 1px solid rgba(227, 93, 93, .45); }
+  .btn.danger:hover { background: rgba(227, 93, 93, .1); box-shadow: none; }
+
+  /* Fitur */
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin: 20px 0 60px; }
+  .card {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line);
+    border-radius: 16px; padding: 24px; transition: transform .25s, border-color .25s, box-shadow .25s;
+  }
+  .feature:hover { transform: translateY(-6px); border-color: var(--gold-2); box-shadow: 0 14px 40px rgba(212, 175, 55, .12); }
+  .feature .ic { font-size: 28px; margin-bottom: 10px; }
+  .feature h3 { color: var(--gold-3); margin-bottom: 6px; font-size: 18px; }
+  .feature p { color: var(--dim); font-size: 14px; }
+
+  h2.section { font-family: Georgia, serif; font-size: 28px; margin-bottom: 18px; text-align: center; }
+
+  /* Form */
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin-bottom: 50px; }
+  label { display: block; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold-2); margin: 14px 0 6px; }
+  input[type=text], input[type=password], input[type=search] {
+    width: 100%; padding: 12px 14px; background: #000; color: var(--text); border: 1px solid var(--line);
+    border-radius: 10px; font-size: 15px; outline: none; transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus { border-color: var(--gold-3); box-shadow: 0 0 0 3px rgba(212, 175, 55, .15); }
+  .drop {
+    display: block; text-align: center; padding: 22px; border: 2px dashed var(--line); border-radius: 12px; cursor: pointer;
+    color: var(--dim); transition: border-color .2s, background .2s; text-transform: none; letter-spacing: 0; font-size: 14px; margin-top: 0;
+  }
+  .drop:hover { border-color: var(--gold-2); background: rgba(212, 175, 55, .05); }
+  .drop input { display: none; }
+  #preview { max-width: 100%; max-height: 220px; border-radius: 10px; margin-top: 10px; display: none; border: 1px solid var(--line); }
+  .pay { background: #000; border: 1px solid var(--line); border-radius: 12px; padding: 14px; font-size: 14px; color: var(--dim); margin-bottom: 4px; }
+  .pay b { color: var(--gold-3); }
+  .notice { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 14px; display: none; }
+  .notice.ok { display: block; background: rgba(61, 220, 132, .08); border: 1px solid rgba(61, 220, 132, .4); }
+  .notice.err { display: block; background: rgba(227, 93, 93, .08); border: 1px solid rgba(227, 93, 93, .4); color: #ffb3b3; }
+  .keybox { margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .keybox code { font-size: 17px; letter-spacing: 1px; color: var(--gold-3); background: #000; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); word-break: break-all; }
+
+  /* Footer & Admin */
+  footer { border-top: 1px solid var(--line); padding: 26px 0 40px; text-align: center; color: var(--dim); font-size: 13px; }
+  footer a { color: var(--dim); text-decoration: none; opacity: .55; }
+  footer a:hover { opacity: 1; color: var(--gold-2); }
+  #adminSection { display: none; padding: 40px 0 70px; border-top: 1px solid var(--line); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; margin-top: 14px; }
+  table { width: 100%; border-collapse: collapse; min-width: 860px; font-size: 13px; }
+  th { text-align: left; color: var(--gold-2); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; padding: 12px; background: #0a0a0c; }
+  td { padding: 11px 12px; border-top: 1px solid rgba(212, 175, 55, .12); vertical-align: middle; }
+  tr:hover td { background: rgba(212, 175, 55, .04); }
+  td code { color: var(--gold-3); font-size: 12px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; letter-spacing: .5px; border: 1px solid; }
+  .badge.waiting_approval { color: var(--warn); border-color: rgba(241, 196, 15, .5); }
+  .badge.approved { color: var(--ok); border-color: rgba(61, 220, 132, .5); }
+  .badge.rejected { color: var(--danger); border-color: rgba(227, 93, 93, .5); }
+  .badge.suspended { color: #9aa0a6; border-color: rgba(154, 160, 166, .5); }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+  .toolbar input { max-width: 300px; }
+  #toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 30px); opacity: 0; pointer-events: none;
+    background: #000; border: 1px solid var(--gold-2); color: var(--gold-3); padding: 11px 20px; border-radius: 10px;
+    transition: all .3s; z-index: 50; max-width: 90%;
+  }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .reveal { animation: rise .7s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @media (max-width: 600px) { .hero { padding-top: 44px; } .brand h1 { font-size: 20px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div class="logo-ring"><div class="inner">
+      <!-- ===== LOGO KAMU DI SINI ===== -->
+      <img id="siteLogo" src="logo.png" alt="Logo 4MankkTool">
+      <span class="logo-fallback gold-text" id="logoFallback" style="display:none">4M</span>
+    </div></div>
+    <div class="brand">
+      <h1 class="gold-text">4MankkTool</h1>
+      <p>Versi 2</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero reveal">
+    <h2 class="gold-text">Plugin Premium untuk<br>Roblox Studio</h2>
+    <p>Part to Mesh tanpa distorsi, Image to Texture 6 sisi, dan Part to Union solid modeling — dalam satu panel hitam &amp; emas yang elegan.</p>
+    <a class="btn" href="#beli">BELI SEKARANG</a>
+  </section>
+
+  <section class="grid3">
+    <div class="card feature reveal"><div class="ic">🧩</div><h3>Part to Mesh</h3><p>Gabungkan banyak part menjadi 1 MeshPart utuh. Posisi, ukuran, dan orientasi tetap presisi lewat kalkulasi pivot grup.</p></div>
+    <div class="card feature reveal"><div class="ic">🖼️</div><h3>Image to Texture</h3><p>Hapus tekstur lama dan tempel gambar penuh ke seluruh 6 sisi objek sekaligus.</p></div>
+    <div class="card feature reveal"><div class="ic">🔗</div><h3>Part to Union</h3><p>Solid modeling CSG: satukan banyak part menjadi satu objek dengan GeometryService.</p></div>
+  </section>
+
+  <h2 class="section gold-text" id="beli">Beli Plugin</h2>
+  <section class="two">
+    <div class="card">
+      <div class="pay">
+        Transfer ke: <b>[ISI NOMOR REKENING / E-WALLET KAMU]</b><br>
+        Atas nama: <b>[ISI NAMA]</b><br>
+        Nominal: <b>[ISI HARGA]</b>
+      </div>
+
+      <label for="fName">Nama</label>
+      <input id="fName" type="text" maxlength="60" placeholder="Nama kamu" autocomplete="name">
+
+      <label for="fDiscord">Discord ID (angka)</label>
+      <input id="fDiscord" type="text" inputmode="numeric" maxlength="20" placeholder="contoh: 123456789012345678">
+
+      <label>Bukti Transfer (Screenshot)</label>
+      <label class="drop" for="fProof" id="dropLabel">
+        📎 Klik untuk pilih screenshot (PNG / JPG / WEBP)
+        <input id="fProof" type="file" accept="image/png,image/jpeg,image/webp">
+      </label>
+      <img id="preview" alt="Preview bukti transfer">
+
+      <div style="margin-top:18px"><button class="btn" id="btnOrder" style="width:100%">KIRIM &amp; DAPATKAN KEY</button></div>
+      <div id="orderNotice" class="notice"></div>
+    </div>
+
+    <div class="card">
+      <h3 class="gold-text" style="font-family:Georgia,serif;margin-bottom:6px">Cek Status Key</h3>
+      <p style="color:var(--dim);font-size:14px">Masukkan key kamu untuk melihat apakah sudah di-ACC admin.</p>
+      <label for="fCheck">License Key</label>
+      <input id="fCheck" type="text" placeholder="4MK-XXXXXX-XXXXXX-XXXXXX" maxlength="30">
+      <div style="margin-top:14px"><button class="btn ghost" id="btnCheck">CEK STATUS</button></div>
+      <div id="checkNotice" class="notice"></div>
+
+      <h3 class="gold-text" style="font-family:Georgia,serif;margin:26px 0 6px">Cara Pakai</h3>
+      <ol style="color:var(--dim);font-size:14px;padding-left:18px">
+        <li>Isi form &amp; upload bukti transfer.</li>
+        <li>Simpan key yang muncul.</li>
+        <li>Tunggu admin meng-ACC (cek status di sini).</li>
+        <li>Buka plugin di Studio, tempel key, klik Aktifkan.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<!-- ===== Dashboard Admin (tersembunyi) ===== -->
+<section id="adminSection">
+  <div class="wrap">
+    <h2 class="section gold-text">Admin Dashboard</h2>
+
+    <div id="loginBox" class="card" style="max-width:420px;margin:0 auto">
+      <label for="admPass" style="margin-top:0">Password Admin</label>
+      <input id="admPass" type="password" autocomplete="current-password" placeholder="••••••••">
+      <div style="margin-top:14px"><button class="btn" id="btnLogin" style="width:100%">MASUK</button></div>
+      <div id="loginNotice" class="notice"></div>
+    </div>
+
+    <div id="panel" style="display:none">
+      <div class="toolbar">
+        <input id="admSearch" type="search" placeholder="Cari nama / discord / key…">
+        <div class="actions">
+          <button class="btn ghost sm" id="btnRefresh">REFRESH</button>
+          <button class="btn danger sm" id="btnLogout">KELUAR</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Waktu</th><th>Nama</th><th>Discord</th><th>Key</th><th>Status</th><th>Roblox ID</th><th>Bukti</th><th>Aksi</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p id="count" style="color:var(--dim);font-size:12px;margin-top:8px"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    © <span id="year"></span> 4MankkTool Versi 2 · Gunakan hanya untuk aset milik sendiri / berizin.
+    <br><a href="#" id="adminLink">admin</a>
+  </div>
+</footer>
+<div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const STATUS_LABEL = { waiting_approval: 'MENUNGGU', approved: 'AKTIF', rejected: 'DITOLAK', suspended: 'MATI' };
+
+  $('year').textContent = new Date().getFullYear();
+  $('siteLogo').addEventListener('error', () => { $('siteLogo').style.display = 'none'; $('logoFallback').style.display = 'block'; });
+
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+  function notice(el, cls, text) { el.className = 'notice ' + cls; el.textContent = text; }
+
+  async function post(url, body, headers) {
+    const res = await fetch(url, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, headers || {}), body: JSON.stringify(body) });
+    let data = {}; try { data = await res.json(); } catch (e) {}
+    if (!res.ok) throw new Error(data.error || ('Error ' + res.status));
+    return data;
+  }
+
+  /* ---------- Upload + kompres bukti transfer ---------- */
+  let proofDataUrl = null;
+  $('fProof').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    proofDataUrl = null;
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { toast('File harus PNG / JPG / WEBP'); e.target.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 1400, scale = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        proofDataUrl = c.toDataURL('image/jpeg', 0.82);
+        $('preview').src = proofDataUrl; $('preview').style.display = 'block';
+        $('dropLabel').firstChild.textContent = '✅ ' + file.name + ' ';
+      };
+      img.onerror = () => toast('Gambar tidak bisa dibaca');
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ---------- Kirim order ---------- */
+  $('btnOrder').addEventListener('click', async () => {
+    const box = $('orderNotice'), btn = $('btnOrder');
+    const name = $('fName').value.trim(), discordId = $('fDiscord').value.trim();
+    if (name.length < 2) return notice(box, 'err', 'Isi nama dengan benar.');
+    if (!/^\d{17,20}$/.test(discordId)) return notice(box, 'err', 'Discord ID harus angka 17–20 digit.');
+    if (!proofDataUrl) return notice(box, 'err', 'Upload screenshot bukti transfer dulu.');
+
+    btn.disabled = true; btn.textContent = 'MENGIRIM…';
+    try {
+      const data = await post('/api/order', { name, discordId, proof: proofDataUrl });
+      box.className = 'notice ok'; box.textContent = '';
+      const p = document.createElement('div'); p.textContent = data.message; box.appendChild(p);
+      const kb = document.createElement('div'); kb.className = 'keybox';
+      const code = document.createElement('code'); code.textContent = data.key;
+      const copy = document.createElement('button'); copy.className = 'btn ghost sm'; copy.textContent = 'COPY';
+      copy.onclick = () => navigator.clipboard.writeText(data.key).then(() => toast('Key disalin'));
+      kb.appendChild(code); kb.appendChild(copy); box.appendChild(kb);
+      $('fCheck').value = data.key;
+    } catch (e) { notice(box, 'err', e.message); }
+    btn.disabled = false; btn.textContent = 'KIRIM & DAPATKAN KEY';
+  });
+
+  /* ---------- Cek status ---------- */
+  $('btnCheck').addEventListener('click', async () => {
+    const box = $('checkNotice'), key = $('fCheck').value.trim().toUpperCase();
+    if (!key) return notice(box, 'err', 'Masukkan key dulu.');
+    try {
+      const data = await post('/api/verify', { key, mode: 'status' });
+      notice(box, data.status === 'approved' ? 'ok' : (data.status === 'waiting_approval' ? 'ok' : 'err'), data.message);
+    } catch (e) { notice(box, 'err', e.message); }
+  });
+
+  /* ---------- Admin ---------- */
+  let adminPass = sessionStorage.getItem('adm') || '';
+  let licenses = [];
+  const admin = (body) => post('/api/admin-control', body, { 'x-admin-password': adminPass });
+
+  function showAdmin() {
+    $('adminSection').style.display = 'block';
+    $('adminSection').scrollIntoView({ behavior: 'smooth' });
+    if (adminPass) loadList(true);
+  }
+  $('adminLink').addEventListener('click', (e) => { e.preventDefault(); showAdmin(); });
+  if (location.pathname.replace(/\/+$/, '') === '/admin') showAdmin();
+
+  $('btnLogin').addEventListener('click', async () => {
+    adminPass = $('admPass').value;
+    try { await admin({ action: 'login' }); sessionStorage.setItem('adm', adminPass); $('admPass').value = ''; await loadList(); }
+    catch (e) { adminPass = ''; notice($('loginNotice'), 'err', e.message); }
+  });
+  $('admPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnLogin').click(); });
+  $('btnLogout').addEventListener('click', () => {
+    sessionStorage.removeItem('adm'); adminPass = ''; $('panel').style.display = 'none'; $('loginBox').style.display = 'block';
+  });
+  $('btnRefresh').addEventListener('click', () => loadList());
+  $('admSearch').addEventListener('input', render);
+
+  async function loadList(silent) {
+    try {
+      const data = await admin({ action: 'list' });
+      licenses = data.licenses || [];
+      $('loginBox').style.display = 'none'; $('panel').style.display = 'block';
+      render();
+    } catch (e) {
+      if (!silent) toast(e.message);
+      $('panel').style.display = 'none'; $('loginBox').style.display = 'block';
+    }
+  }
+
+  function cell(tr, child) { const td = document.createElement('td'); if (typeof child === 'string') td.textContent = child; else if (child) td.appendChild(child); tr.appendChild(td); return td; }
+
+  function actionBtn(label, cls, handler) {
+    const b = document.createElement('button'); b.className = 'btn sm ' + cls; b.textContent = label; b.onclick = handler; return b;
+  }
+
+  async function setStatus(l, status) {
+    try { await admin({ action: 'set_status', id: l.id, status }); toast('Status: ' + STATUS_LABEL[status]); await loadList(); }
+    catch (e) { toast(e.message); }
+  }
+
+  function render() {
+    const q = $('admSearch').value.trim().toLowerCase();
+    const tbody = $('rows'); tbody.textContent = '';
+    const list = licenses.filter((l) => !q || [l.buyer_name, l.discord_id, l.license_key].join(' ').toLowerCase().includes(q));
+    list.forEach((l) => {
+      const tr = document.createElement('tr');
+      cell(tr, new Date(l.created_at).toLocaleString('id-ID'));
+      cell(tr, l.buyer_name);
+      cell(tr, l.discord_id);
+      const code = document.createElement('code'); code.textContent = l.license_key; cell(tr, code);
+      const badge = document.createElement('span'); badge.className = 'badge ' + l.status; badge.textContent = STATUS_LABEL[l.status] || l.status; cell(tr, badge);
+      cell(tr, l.bound_user_id ? String(l.bound_user_id) : '-');
+      const proof = document.createElement('span');
+      if (l.proof_url && /^https:\/\//.test(l.proof_url)) {
+        const a = document.createElement('a'); a.href = l.proof_url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'Lihat'; a.style.color = 'var(--gold-2)'; proof.appendChild(a);
+      } else proof.textContent = '-';
+      cell(tr, proof);
+      const acts = document.createElement('div'); acts.className = 'actions';
+      acts.appendChild(actionBtn('AKTIFKAN', '', () => setStatus(l, 'approved')));
+      acts.appendChild(actionBtn('MATIKAN', 'ghost', () => setStatus(l, 'suspended')));
+      acts.appendChild(actionBtn('TOLAK', 'danger', () => setStatus(l, 'rejected')));
+      if (l.bound_user_id) acts.appendChild(actionBtn('RESET BIND', 'ghost', async () => {
+        try { await admin({ action: 'reset_bind', id: l.id }); toast('Bind direset'); await loadList(); } catch (e) { toast(e.message); }
+      }));
+      cell(tr, acts);
+      tbody.appendChild(tr);
+    });
+    $('count').textContent = list.length + ' dari ' + licenses.length + ' lisensi';
+  }
+})();
+</script>
+</body>
+</html>

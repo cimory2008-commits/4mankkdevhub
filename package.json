@@ -1,0 +1,12 @@
+{
+  "name": "4mankktool-license",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Sistem lisensi 4MankkTool Versi 2 (Vercel + Supabase + Discord)",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
